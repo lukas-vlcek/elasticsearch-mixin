@@ -28,30 +28,10 @@ local gauge = promgrafonnet.gauge;
           legend_hideEmpty=false,
           legend_hideZero=false,
           legend_values=true,
-          legend_sort=true,  // not working?
+          legend_sort=true,
         ).addTarget(
           prometheus.target('es_os_cpu_percent{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
         );
-      // + {
-      //   yaxes: [
-      //     {
-      //       format: 'percent',
-      //       label: 'CPU Usage', // this one can not be set via function parameter in graphPanel.new
-      //       logBase: 1,
-      //       max: 100,
-      //       min: 0,
-      //       show: true,
-      //     },
-      //     {
-      //       format: 'short',
-      //       label: null,
-      //       logBase: 1,
-      //       max: null,
-      //       min: null,
-      //       show: false,
-      //     },
-      //   ],
-      // };
 
       local systemMemoryUsageGraph =
         graphPanel.new(
