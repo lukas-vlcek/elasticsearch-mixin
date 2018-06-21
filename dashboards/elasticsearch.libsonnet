@@ -28,7 +28,6 @@ local gauge = promgrafonnet.gauge;
           legend_hideEmpty=false,
           legend_hideZero=false,
           legend_values=true,
-          legend_sort=true,
         ).addTarget(
           prometheus.target('es_os_cpu_percent{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
         );
@@ -48,7 +47,6 @@ local gauge = promgrafonnet.gauge;
           legend_hideEmpty=false,
           legend_hideZero=false,
           legend_values=true,
-          legend_sort=true,  // not working?
         ).addTarget(
           prometheus.target('es_os_mem_used_bytes{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
         );
@@ -69,7 +67,6 @@ local gauge = promgrafonnet.gauge;
           legend_hideEmpty=false,
           legend_hideZero=false,
           legend_values=true,
-          legend_sort=true,  // not working?
         ).addTarget(
           prometheus.target('1 - es_fs_path_available_bytes{cluster="$cluster",node=~"$node"} / es_fs_path_total_bytes{cluster="$cluster",node=~"$node"}', legendFormat='{{node}} - {{path}}')
         ) + {
