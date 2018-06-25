@@ -1,17 +1,158 @@
+local promgrafonnet = import '../lib/promgrafonnet/promgrafonnet.libsonnet';
 local grafana = import 'grafonnet/grafana.libsonnet';
 local dashboard = grafana.dashboard;
 local row = grafana.row;
 local prometheus = grafana.prometheus;
 local template = grafana.template;
 local graphPanel = grafana.graphPanel;
-local promgrafonnet = import '../lib/promgrafonnet/promgrafonnet.libsonnet';
-local numbersinglestat = promgrafonnet.numbersinglestat;
+// local yaxes = grafana.yaxes; // I need to create custom promgrafonnet wrapper file?
+local singlestat = grafana.singlestat;
 local gauge = promgrafonnet.gauge;
 
 {
   grafanaDashboards+:: {
     'logging-elasticsearch.json':
 
+      // ==========================================
+      local clusterStatusGraph =
+        singlestat.new(
+          'Cluster status',
+          datasource='$datasource',
+          span=2
+        ).addTarget(
+          prometheus.target(
+            'max(es_cluster_status{cluster="$cluster"})'
+          )
+        ) + {
+          colorBackground: true,
+          colors: [
+            'rgba(50, 172, 45, 0.97)',
+            'rgba(255, 166, 0, 0.89)',
+            'rgba(245, 54, 54, 0.9)',
+          ],
+          thresholds: '1,2',
+          valueMaps: [
+            {
+              op: '=',
+              text: 'GREEN',
+              value: '0',
+            },
+            {
+              op: '=',
+              text: 'YELLOW',
+              value: '1',
+            },
+            {
+              op: '=',
+              text: 'RED',
+              value: '2',
+            },
+          ],
+        };
+
+      // Histogram seem to require a lot of graphPanel customization.
+      // We shall consider creating a new component for it.
+      local clusterHealthHistoryGraph =
+        graphPanel.new(
+          null,
+          span=4,
+          datasource='$datasource',
+        ).addTarget(
+          prometheus.target(
+            '(es_cluster_status{cluster="$cluster"} == 0) + 1',
+            legendFormat='GREEN',
+            intervalFactor=10,
+          )
+        ).addTarget(
+          prometheus.target(
+            '(es_cluster_status{cluster="$cluster"} == 1)',
+            legendFormat='YELLOW',
+            intervalFactor=10,
+          )
+        ).addTarget(
+          prometheus.target(
+            '(es_cluster_status{cluster="$cluster"} == 2) - 1',
+            legendFormat='RED',
+            intervalFactor=10,
+          )
+        ) + {
+          stack: true,
+          bars: true,
+          fill: 10,
+          lines: false,
+          percentage: true,
+          legend: {
+            alignAsTable: false,
+            avg: false,
+            current: false,
+            max: false,
+            min: false,
+            rightSide: false,
+            show: false,
+            total: false,
+            values: false,
+          },
+          seriesOverrides: [
+            {
+              alias: 'GREEN',
+              color: 'rgba(50, 172, 45, 0.97)',
+            },
+            {
+              alias: 'YELLOW',
+              color: 'rgba(255, 166, 0, 0.89)',
+            },
+            {
+              alias: 'RED',
+              color: 'rgba(245, 54, 54, 0.9)',
+            },
+          ],
+          yaxes: [
+            {
+              format: 'none',
+              label: null,
+              logBase: 1,
+              max: '100',
+              min: '0',
+              show: false,
+            },
+            {
+              format: 'short',
+              label: null,
+              logBase: 1,
+              max: null,
+              min: null,
+              show: false,
+            },
+          ],
+        };
+
+      local clusterRow = row.new(
+        height='100',
+        title='Cluster',
+      ).addPanel(clusterStatusGraph)
+                         .addPanel(clusterHealthHistoryGraph)
+                         .addPanel(clusterStatusGraph)
+                         .addPanel(clusterStatusGraph)
+                         .addPanel(clusterStatusGraph);
+
+      // ==========================================
+      local shardsActiveGraph =
+        graphPanel.new(
+          'Active shards',
+          span=2.39,
+          datasource='$datasource',
+        );
+
+      local shardsRow = row.new(
+        height='100',
+        title='Shards',
+      ).addPanel(shardsActiveGraph)
+                        .addPanel(shardsActiveGraph)
+                        .addPanel(shardsActiveGraph)
+                        .addPanel(shardsActiveGraph)
+                        .addPanel(shardsActiveGraph);
+
+      // ==========================================
       local systemCpuUsageGraph =
         graphPanel.new(
           'CPU usage',
@@ -138,6 +279,8 @@ local gauge = promgrafonnet.gauge;
           includeAll: true,
         }
       )
+      .addRow(clusterRow)
+      .addRow(shardsRow)
       .addRow(systemRow),
   },
 }
