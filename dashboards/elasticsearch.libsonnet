@@ -126,14 +126,47 @@ local gauge = promgrafonnet.gauge;
           ],
         };
 
+      local clusterNodesGraph =
+        singlestat.new(
+          'Nodes',
+          datasource='$datasource',
+          span=2
+        ).addTarget(
+          prometheus.target(
+            'max(es_cluster_nodes_number{cluster="$cluster"})'
+          )
+        );
+
+      local clusterDataNodesGraph =
+        singlestat.new(
+          'Data nodes',
+          datasource='$datasource',
+          span=2
+        ).addTarget(
+          prometheus.target(
+            'max(es_cluster_datanodes_number{cluster="$cluster"})'
+          )
+        );
+
+      local clusterPendingTasksGraph =
+        singlestat.new(
+          'Pending tasks',
+          datasource='$datasource',
+          span=2
+        ).addTarget(
+          prometheus.target(
+            'max(es_cluster_pending_tasks_number{cluster="$cluster"})'
+          )
+        );
+
       local clusterRow = row.new(
         height='100',
         title='Cluster',
       ).addPanel(clusterStatusGraph)
                          .addPanel(clusterHealthHistoryGraph)
-                         .addPanel(clusterStatusGraph)
-                         .addPanel(clusterStatusGraph)
-                         .addPanel(clusterStatusGraph);
+                         .addPanel(clusterNodesGraph)
+                         .addPanel(clusterDataNodesGraph)
+                         .addPanel(clusterPendingTasksGraph);
 
       // ==========================================
       local shardsActiveGraph =
