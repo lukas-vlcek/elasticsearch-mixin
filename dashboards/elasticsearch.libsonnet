@@ -169,21 +169,24 @@ local gauge = promgrafonnet.gauge;
                          .addPanel(clusterPendingTasksGraph);
 
       // ==========================================
-      local shardsActiveGraph =
+      local shardsTypeGraph =
         graphPanel.new(
-          'Active shards',
-          span=2.39,
+          '_OVERRIDE_ shards',
+          span=2.4,
           datasource='$datasource',
-        );
+        ).addTarget(
+          prometheus.target(
+            'max(es_cluster_shards_number{cluster="$cluster",type="$shard_type"})'
+          )
+        ) + {
+          title: '$shard_type shards',
+          repeat: 'shard_type',
+        };
 
       local shardsRow = row.new(
         height='100',
         title='Shards',
-      ).addPanel(shardsActiveGraph)
-                        .addPanel(shardsActiveGraph)
-                        .addPanel(shardsActiveGraph)
-                        .addPanel(shardsActiveGraph)
-                        .addPanel(shardsActiveGraph);
+      ).addPanel(shardsTypeGraph);
 
       // ==========================================
       local systemCpuUsageGraph =
@@ -305,6 +308,19 @@ local gauge = promgrafonnet.gauge;
           label: 'Node',
           name: 'node',
           query: 'label_values(es_jvm_uptime_seconds{cluster="$cluster"}, node)',
+          refresh: 1,
+          regex: '',
+          type: 'query',
+          sort: 1,
+          includeAll: true,
+        }
+      ).addTemplate(
+        {
+          hide: 2,
+          datasource: '$datasource',
+          label: 'Shard',
+          name: 'shard_type',
+          query: 'label_values(es_cluster_shards_number, type)',
           refresh: 1,
           regex: '',
           type: 'query',
