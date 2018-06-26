@@ -353,6 +353,7 @@ local gauge = promgrafonnet.gauge;
         graphPanel.new(
           'Documents count (with replicas)',
           span=4,
+          // min=0,
           datasource='$datasource',
           legend_alignAsTable=true,
           legend_avg=true,
@@ -364,7 +365,14 @@ local gauge = promgrafonnet.gauge;
           legend_values=true,
         ).addTarget(
           prometheus.target('es_indices_doc_number{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
-        );
+        ) + {
+          fill: 3,
+          tooltip: {
+            shared: true,
+            sort: 2,
+            value_type: 'individual',
+          },
+        };
 
       local documentsDeletingRateGraph =
         graphPanel.new(
