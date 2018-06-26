@@ -277,6 +277,120 @@ local gauge = promgrafonnet.gauge;
       ).addPanel(systemCpuUsageGraph)
                         .addPanel(systemMemoryUsageGraph)
                         .addPanel(systemDiskUsageGraph);
+      // ==========================================
+      // Caches row
+      // ==========================================
+      local cacheFieldDataMemSizeGraph =
+        graphPanel.new(
+          'Field data memory size',
+          span=6,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('es_indices_fielddata_memory_size_bytes{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
+        );
+
+      local cacheFieldDataEvictionsGraph =
+        graphPanel.new(
+          'Field data evictions',
+          span=6,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_fielddata_evictions_count{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local cacheQuerySizeGraph =
+        graphPanel.new(
+          'Query cache size',
+          span=3,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('es_indices_querycache_cache_size_bytes{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
+        );
+
+      local cacheQueryEvictionsGraph =
+        graphPanel.new(
+          'Query cache evictions',
+          span=3,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_querycache_evictions_count{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local cacheQueryHitsGraph =
+        graphPanel.new(
+          'Query cache hits',
+          span=3,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_querycache_hit_count{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local cacheQueryMissesGraph =
+        graphPanel.new(
+          'Query cache misses',
+          span=3,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_querycache_miss_number{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local cachesRow = row.new(
+        height='400',
+        title='Caches',
+      ).addPanel(cacheFieldDataMemSizeGraph)
+                        .addPanel(cacheFieldDataEvictionsGraph)
+                        .addPanel(cacheQuerySizeGraph)
+                        .addPanel(cacheQueryEvictionsGraph)
+                        .addPanel(cacheQueryHitsGraph)
+                        .addPanel(cacheQueryMissesGraph);
 
       // ==========================================
       // Throttling row
@@ -498,6 +612,7 @@ local gauge = promgrafonnet.gauge;
       .addRow(clusterRow)
       .addRow(shardsRow)
       .addRow(systemRow)
+      .addRow(cachesRow)
       .addRow(throttlingRow)
       .addRow(jvmRow),
   },
