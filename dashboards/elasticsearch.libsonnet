@@ -14,6 +14,8 @@ local gauge = promgrafonnet.gauge;
     'logging-elasticsearch.json':
 
       // ==========================================
+      // Cluster row
+      // ==========================================
       local clusterStatusGraph =
         singlestat.new(
           'Cluster status',
@@ -169,6 +171,8 @@ local gauge = promgrafonnet.gauge;
                          .addPanel(clusterPendingTasksGraph);
 
       // ==========================================
+      // Shards row
+      // ==========================================
       local shardsTypeGraph =
         graphPanel.new(
           '_OVERRIDE_ shards',
@@ -188,6 +192,8 @@ local gauge = promgrafonnet.gauge;
         title='Shards',
       ).addPanel(shardsTypeGraph);
 
+      // ==========================================
+      // System row
       // ==========================================
       local systemCpuUsageGraph =
         graphPanel.new(
@@ -272,6 +278,69 @@ local gauge = promgrafonnet.gauge;
                         .addPanel(systemMemoryUsageGraph)
                         .addPanel(systemDiskUsageGraph);
 
+      // ==========================================
+      // JVM row
+      // ==========================================
+      local jvmHeapUsedGraph =
+        graphPanel.new(
+          'Heap used',
+          span=4,
+          datasource='$datasource',
+          format='bytes',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('es_jvm_mem_heap_used_bytes{cluster="$cluster", node=~"$node"}', legendFormat='{{node}} - heap used')
+        );
+
+      local jvmGCcountGraph =
+        graphPanel.new(
+          'GC count',
+          span=4,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_jvm_gc_collection_count{cluster="$cluster",node=~"$node"}[$interval])', legendFormat='{{node}} - {{gc}}')
+        );
+
+      local jvmGCTimeGraph =
+        graphPanel.new(
+          'GC time',
+          span=4,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_jvm_gc_collection_time_seconds{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}} - {{gc}}')
+        );
+
+      local jvmRow = row.new(
+        height='400',
+        title='JVM',
+      ).addPanel(jvmHeapUsedGraph)
+                     .addPanel(jvmGCcountGraph)
+                     .addPanel(jvmGCTimeGraph);
+
+      // ==========================================
       dashboard.new('Elasticsearch', time_from='now-3h')
       .addTemplate(
         {
@@ -288,6 +357,61 @@ local gauge = promgrafonnet.gauge;
           regex: '',
           type: 'datasource',
         },
+      ).addTemplate(
+        {
+          allValue: null,
+          current: {
+            tags: [],
+            text: '1m',
+            value: '1m',
+          },
+          datasource: 'prometheus',
+          hide: 0,
+          includeAll: false,
+          label: 'Interval',
+          multi: false,
+          name: 'interval',
+          options: [
+            {
+              selected: false,
+              text: '15s',
+              value: '15s',
+            },
+            {
+              selected: false,
+              text: '30s',
+              value: '30s',
+            },
+            {
+              selected: true,
+              text: '1m',
+              value: '1m',
+            },
+            {
+              selected: false,
+              text: '5m',
+              value: '5m',
+            },
+            {
+              selected: false,
+              text: '1h',
+              value: '1h',
+            },
+            {
+              selected: false,
+              text: '6h',
+              value: '6h',
+            },
+            {
+              selected: false,
+              text: '1d',
+              value: '1d',
+            },
+          ],
+          query: '15s, 30s, 1m, 5m, 1h, 6h, 1d',
+          refresh: 0,
+          type: 'custom',
+        }
       ).addTemplate(
         {
           hide: 0,
@@ -330,6 +454,7 @@ local gauge = promgrafonnet.gauge;
       )
       .addRow(clusterRow)
       .addRow(shardsRow)
-      .addRow(systemRow),
+      .addRow(systemRow)
+      .addRow(jvmRow),
   },
 }
