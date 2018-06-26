@@ -277,6 +277,140 @@ local gauge = promgrafonnet.gauge;
       ).addPanel(systemCpuUsageGraph)
                         .addPanel(systemMemoryUsageGraph)
                         .addPanel(systemDiskUsageGraph);
+
+      // ==========================================
+      // Documents and Latencies row
+      // ==========================================
+      local documentsIndexingRateGraph =
+        graphPanel.new(
+          'Documents indexing rate',
+          span=3,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_indexing_index_count{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local indexingLatencyGraph =
+        graphPanel.new(
+          'Indexing latency',
+          span=3,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_indexing_index_time_seconds{cluster="$cluster", node=~"$node"}[$interval]) / rate(es_indices_indexing_index_count{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local searchRateGraph =
+        graphPanel.new(
+          'Search rate',
+          span=3,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_search_query_count{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local searchLatencyGraph =
+        graphPanel.new(
+          'Search latency',
+          span=3,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_search_query_time_seconds{cluster="$cluster", node=~"$node"}[$interval]) / rate(es_indices_search_query_count{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local documentsCountIncReplicasGraph =
+        graphPanel.new(
+          'Documents count (with replicas)',
+          span=4,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('es_indices_doc_number{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
+        );
+
+      local documentsDeletingRateGraph =
+        graphPanel.new(
+          'Documents deleting rate',
+          span=4,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_doc_deleted_number{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local documentsMergingRateGraph =
+        graphPanel.new(
+          'Documents merging rate',
+          span=4,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_merges_total_docs_count{cluster="$cluster",node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local docsAndLatenciesRow = row.new(
+        height='400',
+        title='Documents and Latencies',
+      ).addPanel(documentsIndexingRateGraph)
+                                  .addPanel(indexingLatencyGraph)
+                                  .addPanel(searchRateGraph)
+                                  .addPanel(searchLatencyGraph)
+                                  .addPanel(documentsCountIncReplicasGraph)
+                                  .addPanel(documentsDeletingRateGraph)
+                                  .addPanel(documentsMergingRateGraph);
+
       // ==========================================
       // Caches row
       // ==========================================
@@ -612,6 +746,7 @@ local gauge = promgrafonnet.gauge;
       .addRow(clusterRow)
       .addRow(shardsRow)
       .addRow(systemRow)
+      .addRow(docsAndLatenciesRow)
       .addRow(cachesRow)
       .addRow(throttlingRow)
       .addRow(jvmRow),
