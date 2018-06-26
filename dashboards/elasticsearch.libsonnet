@@ -279,6 +279,49 @@ local gauge = promgrafonnet.gauge;
                         .addPanel(systemDiskUsageGraph);
 
       // ==========================================
+      // Throttling row
+      // ==========================================
+      local throttlingIndexingGraph =
+        graphPanel.new(
+          'Indexing throttling',
+          span=6,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_indexing_throttle_time_seconds{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local throttlingMergingGraph =
+        graphPanel.new(
+          'Merging throttling',
+          span=6,
+          datasource='$datasource',
+          legend_alignAsTable=true,
+          legend_avg=true,
+          legend_current=true,
+          legend_max=true,
+          legend_min=true,
+          legend_hideEmpty=false,
+          legend_hideZero=false,
+          legend_values=true,
+        ).addTarget(
+          prometheus.target('rate(es_indices_merges_total_throttled_time_seconds{cluster="$cluster", node=~"$node"}[$interval])', legendFormat='{{node}}')
+        );
+
+      local throttlingRow = row.new(
+        height='400',
+        title='Throttling',
+      ).addPanel(throttlingIndexingGraph)
+                            .addPanel(throttlingMergingGraph);
+
+      // ==========================================
       // JVM row
       // ==========================================
       local jvmHeapUsedGraph =
@@ -455,6 +498,7 @@ local gauge = promgrafonnet.gauge;
       .addRow(clusterRow)
       .addRow(shardsRow)
       .addRow(systemRow)
+      .addRow(throttlingRow)
       .addRow(jvmRow),
   },
 }
