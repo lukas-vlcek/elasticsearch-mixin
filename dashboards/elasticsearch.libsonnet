@@ -7,6 +7,7 @@ local template = grafana.template;
 local graphPanel = grafana.graphPanel;
 // local yaxes = grafana.yaxes; // I need to create custom promgrafonnet wrapper file?
 local singlestat = grafana.singlestat;
+local tablePanel = grafana.tablePanel;
 local gauge = promgrafonnet.gauge;
 
 {
@@ -420,6 +421,21 @@ local gauge = promgrafonnet.gauge;
                                   .addPanel(documentsMergingRateGraph);
 
       // ==========================================
+      // Indices row
+      // ==========================================
+      local topKIndices = tablePanel.new(
+        title='Top 10 largest indices (primary shards only)',
+        datasource='$datasource',
+      ).addTarget(
+        prometheus.target('topk(10, max(es_index_store_size_bytes{cluster="$cluster", node=~"$node", context="primaries"}) by (index))')
+      );
+
+      local indicesRow = row.new(
+        height='400',
+        title='Indices',
+      ).addPanel(topKIndices);
+
+      // ==========================================
       // Caches row
       // ==========================================
       local cacheFieldDataMemSizeGraph =
@@ -755,6 +771,7 @@ local gauge = promgrafonnet.gauge;
       .addRow(shardsRow)
       .addRow(systemRow)
       .addRow(docsAndLatenciesRow)
+      .addRow(indicesRow)
       .addRow(cachesRow)
       .addRow(throttlingRow)
       .addRow(jvmRow),
