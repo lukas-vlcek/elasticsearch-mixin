@@ -757,6 +757,8 @@ local gauge = promgrafonnet.gauge;
       .addRow(docsAndLatenciesRow)
       .addRow(cachesRow)
       .addRow(throttlingRow)
-      .addRow(jvmRow),
+      .addRow(jvmRow) + {
+        graphTooltip: 1,
+      },
   },
 }
