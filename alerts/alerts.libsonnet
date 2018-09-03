@@ -99,8 +99,8 @@
                     es_fs_path_total_bytes
                   )
                 ) * 100, 0.001)
-              ) > 85
-            |||,
+              ) > %(esDiskLowWaterMark)s
+            ||| % $._config,
             'for': '5m',
             labels: {
               severity: 'alert',
@@ -120,8 +120,8 @@
                     es_fs_path_total_bytes
                   )
                 ) * 100, 0.001)
-              ) > 90
-            |||,
+              ) > %(esDiskHighWaterMark)s
+            ||| % $._config,
             'for': '5m',
             labels: {
               severity: 'alert',
@@ -174,8 +174,8 @@
           {
             alert: 'JVM_Heap_High',
             expr: |||
-              sum by (cluster, instance, node) (es_jvm_mem_heap_used_percent) > 75
-            |||,
+              sum by (cluster, instance, node) (es_jvm_mem_heap_used_percent) > %(esJvmHeapUseThreshold)s
+            ||| % $._config,
             'for': '5m',
             labels: {
               severity: 'alert',
