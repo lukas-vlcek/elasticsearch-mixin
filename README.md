@@ -2,7 +2,7 @@
 
 > NOTE: This project is *alpha* stage. Flags, configuration, behaviour and design may change significantly in following releases.
 
-A set of Grafana dashboards and Prometheus alerts for Kubernetes.
+A set of Grafana dashboard and Prometheus alerts for Elasticsearch deployed as part of [Origin-Aggregated-Logging](https://github.com/openshift/origin-aggregated-logging/).
 
 ## How to use
 
