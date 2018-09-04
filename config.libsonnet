@@ -57,7 +57,7 @@
     // ==============
     //
     // ES is by default configured to start heavy GC when JVM heap usage crosses 75%. Thus, if ES is using more
-    // that 75% JVM heap for a _longer_ period of time we should check why it is not able to free the memory.
+    // that 75% JVM heap for a longer period of time we should check why it is not able to free the memory.
     //
     // This is ensured by use of -XX:CMSInitiatingOccupancyFraction=75 and -XX:+UseCMSInitiatingOccupancyOnly
     // in `distribution/src/config/jvm.options` in ES source code. Notice that this config is relevant as long as JVM
@@ -67,9 +67,8 @@
     // CPU Usage
     // ==============
     //
-    // High CPU usage for longer period signals capacity problem.
-    // This alert might be already configured at higher level as it is not ES specific.
-    // Optionally, we can focus on ES process CPU only.
+    // High CPU usage for longer period may signal capacity problem.
+    // These alerts might be already monitored at different level (i.e. system monitoring).
     esSystemCPUHigh: 90,
     esProcessCPUHigh: 90,
   },

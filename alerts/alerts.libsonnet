@@ -150,6 +150,7 @@
           // ==========================================
           // CPU Usage
           // ==========================================
+          // TODO: Check how number of CPU cores is reflected in calculation of this metric.
           {
             alert: 'System_CPU_High',
             expr: |||
