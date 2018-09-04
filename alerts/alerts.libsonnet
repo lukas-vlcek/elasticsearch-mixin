@@ -5,29 +5,15 @@
         name: 'logging_elasticsearch.alerts',
         rules: [
 
+          // ==========================================
           // Cluster health alerts
-          // =====================
-          //
-          // Cluster health can become RED by natural cause or by critical cause.
-          //
-          // The natural causes do not last long and they include:
-          //   - a new index is created and all its primary shards haven’t been allocated yet
-          //   - a master node has not been elected yet (for example master node dies and a new master node hasn’t been
-          //     elected yet, and this can take some time if the cluster load is high...)
-          //
-          // If the natural cause takes long or the cause is different than those listed above then it is considered
-          // the critical cause.
-          //
-          // Cluster health becomes YELLOW if not all index replica shards are allocated. If the goal is to have GREEN cluster
-          // health (ie number of replica shards is configured accordingly) but the status stays YELLOW for too long then this
-          // is considered serious.
-
+          // ==========================================
           {
             alert: 'Cluster_Health_Status_RED',
             expr: |||
               sum by (cluster) (es_cluster_status == 2)
             |||,
-            'for': '2m',
+            'for': '%(esClusterHealthStatusRED)s' % $._config,
             labels: {
               severity: 'critical',
             },
@@ -41,7 +27,7 @@
             expr: |||
               sum by (cluster) (es_cluster_status == 1)
             |||,
-            'for': '20m',
+            'for': '%(esClusterHealthStatusYELLOW)s' % $._config,
             labels: {
               severity: 'high',
             },
@@ -51,19 +37,15 @@
             },
           },
 
+          // ==========================================
           // Bulk Requests Rejection
-          // =======================
-          //
-          // Sudden spikes (increases) in number of rejected bulk requests is considered serious. It means the node can not keep
-          // up with incoming bulk request indexing pace.
-          //
-          // Check https://docs.google.com/presentation/d/1X1rKozAUuF2MVc1YXElFWq9wkcWv3Axdldl8LOH9Vik/edit#slide=id.gb41e27854_0_27
+          // ==========================================
 
           {
             alert: 'Bulk_Requests_Rejection_HIGH',
             expr: |||
-              round( bulk:reject_ratio:rate2m * 100, 0.001 ) > 5
-            |||,
+              round( bulk:reject_ratio:rate2m * 100, 0.001 ) > %(esBulkPctIncrease)s
+            ||| % $._config,
             'for': '10m',
             labels: {
               severity: 'high',
@@ -74,20 +56,9 @@
             },
           },
 
+          // ==========================================
           // Disk Usage
-          // ==========
-          //
-          // There are two important thresholds that impact how ES node allocates index shards.
-          //   - 85% used - Low watermark
-          //   - 90% used - High watermark
-          //
-          // Disk allocation thresholds (low, high watermarks) are explained in [1,2].
-          //
-          // It is important the make sure there is enough free disk space for automatic background Lucene segment merges.
-          // Ideally as much free disk space as total sum of actual segment size (ie, data can fit into disk twice).
-          //
-          // [1] https://www.elastic.co/guide/en/elasticsearch/reference/2.4/disk-allocator.html
-          // [2] https://www.elastic.co/guide/en/elasticsearch/reference/5.5/disk-allocator.html
+          // ==========================================
 
           {
             alert: 'Disk_Low_Watermark_Reached',
@@ -132,8 +103,6 @@
             },
           },
 
-          // We want to make sure the index can fit into disk at least two times for optimal segment merges.
-          //
           // Remaining space on the node:
           //   sum by (cluster, instance, node) (es_fs_path_free_bytes)
           // Though this ^^ might not be the best metric, because node can have multiple paths where the
@@ -143,40 +112,32 @@
           // Total index size by node:
           //   sum by (cluster, instance, node) (es_index_store_size_bytes{context="total"}) // <- this does not seem to work correctly!?
           //   sum by (cluster, instance, node) (es_indices_store_size_bytes)
-
           {
             alert: 'Disk_Low_For_Segment_Merges',
             expr: |||
               sum by (cluster, instance, node) (es_fs_path_free_bytes) /
               sum by (cluster, instance, node) (es_indices_store_size_bytes)
-              < 1
-            |||,
-            'for': '10m',
+              < %(esDiskSpaceRatioForMerges)s
+            ||| % $._config,
+            'for': '15m',
             labels: {
               severity: 'warning',
             },
             annotations: {
-              summary: 'Free disk may be low for segment merges',
-              description: 'Free disk at {{ $labels.node }} node in {{ $labels.cluster }} cluster may be low for segment merges',
+              summary: 'Free disk may be low for optimal segment merges',
+              description: 'Free disk at {{ $labels.node }} node in {{ $labels.cluster }} cluster may be low for optimal segment merges',
             },
           },
 
+          // ==========================================
           // JVM Heap Usage
-          // ==============
-          //
-          // ES is by default configured to start heavy GC when JVM heap usage crosses 75%. Thus, if ES is using more
-          // that 75% JVM heap for a _longer_ period of time we should check why it is not able to free the memory.
-          //
-          // This is ensured by use of -XX:CMSInitiatingOccupancyFraction=75 and -XX:+UseCMSInitiatingOccupancyOnly
-          // in `distribution/src/config/jvm.options` in ES source code. Notice that this config is relevant as long as JVM
-          // is using CMS. Once G1 is used this may change.
-
+          // ==========================================
           {
-            alert: 'JVM_Heap_High',
+            alert: 'JVM_Heap_Use_High',
             expr: |||
               sum by (cluster, instance, node) (es_jvm_mem_heap_used_percent) > %(esJvmHeapUseThreshold)s
             ||| % $._config,
-            'for': '5m',
+            'for': '10m',
             labels: {
               severity: 'alert',
             },
@@ -186,18 +147,14 @@
             },
           },
 
+          // ==========================================
           // CPU Usage
-          // ==============
-          //
-          // High CPU usage for longer period signals capacity problem.
-          // This alert might be already configured at higher level as it is not ES specific.
-          // Optionally, we can focus on ES process CPU only.
-
+          // ==========================================
           {
             alert: 'System_CPU_High',
             expr: |||
-              sum by (cluster, instance, node) (es_os_cpu_percent) > 90
-            |||,
+              sum by (cluster, instance, node) (es_os_cpu_percent) > %(esSystemCPUHigh)s
+            ||| % $._config,
             'for': '1m',
             labels: {
               severity: 'alert',
@@ -207,12 +164,11 @@
               description: 'System CPU usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%',
             },
           },
-
           {
-            alert: 'ES_process_CPU_High',
+            alert: 'ES_Process_CPU_High',
             expr: |||
-              sum by (cluster, instance, node) (es_process_cpu_percent) > 90
-            |||,
+              sum by (cluster, instance, node) (es_process_cpu_percent) > %(esProcessCPUHigh)s
+            ||| % $._config,
             'for': '1m',
             labels: {
               severity: 'alert',
