@@ -19,7 +19,7 @@
             },
             annotations: {
               summary: 'Cluster health status is RED',
-              description: 'Cluster {{ $labels.cluster }} health status has been RED for at least %(esClusterHealthStatusRED)s. Cluster does not accept writes, shards may be missing or master node hasn\'t been elected yet.' % $._config,
+              description: "Cluster {{ $labels.cluster }} health status has been RED for at least %(esClusterHealthStatusRED)s. Cluster does not accept writes, shards may be missing or master node hasn't been elected yet." % $._config,
             },
           },
           {

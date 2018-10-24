@@ -14,7 +14,12 @@ Follow that repository for further information about deployment.
 ```
 $ make clean && make
 
-# dashboard json is build here:
+# Prometheus rules and alerts are generated here:
+$ file ./prometheus_rules.yaml ./prometheus_alerts.yaml 
+./prometheus_rules.yaml:  ASCII text
+./prometheus_alerts.yaml: ASCII text
+
+# dashboard json is generated here:
 $ file dashboards_out/logging-elasticsearch.json 
 dashboards_out/logging-elasticsearch.json: ASCII text 
 ```
