@@ -19,7 +19,7 @@
             },
             annotations: {
               summary: 'Cluster health status is RED',
-              description: "Cluster {{ $labels.cluster }} health status has been RED for at least %(esClusterHealthStatusRED)s. Cluster does not accept writes, shards may be missing or master node hasn't been elected yet." % $._config,
+              message: "Cluster {{ $labels.cluster }} health status has been RED for at least %(esClusterHealthStatusRED)s. Cluster does not accept writes, shards may be missing or master node hasn't been elected yet." % $._config,
             },
           },
           {
@@ -33,7 +33,7 @@
             },
             annotations: {
               summary: 'Cluster health status is YELLOW',
-              description: 'Cluster {{ $labels.cluster }} health status has been YELLOW for at least %(esClusterHealthStatusYELLOW)s. Some shard replicas are not allocated.' % $._config,
+              message: 'Cluster {{ $labels.cluster }} health status has been YELLOW for at least %(esClusterHealthStatusYELLOW)s. Some shard replicas are not allocated.' % $._config,
             },
           },
 
@@ -51,7 +51,7 @@
             },
             annotations: {
               summary: 'High Bulk Rejection Ratio - {{ $value }}%',
-              description: 'High Bulk Rejection Ratio at {{ $labels.node }} node in {{ $labels.cluster }} cluster. This node may not be keeping up with the indexing speed.',
+              message: 'High Bulk Rejection Ratio at {{ $labels.node }} node in {{ $labels.cluster }} cluster. This node may not be keeping up with the indexing speed.',
             },
           },
 
@@ -77,7 +77,7 @@
             },
             annotations: {
               summary: 'Disk Low Watermark Reached - disk saturation is {{ $value }}%',
-              description: 'Disk Low Watermark Reached at {{ $labels.node }} node in {{ $labels.cluster }} cluster. Shards can not be allocated to this node anymore. You should consider adding more disk to the node.',
+              message: 'Disk Low Watermark Reached at {{ $labels.node }} node in {{ $labels.cluster }} cluster. Shards can not be allocated to this node anymore. You should consider adding more disk to the node.',
             },
           },
           {
@@ -98,7 +98,7 @@
             },
             annotations: {
               summary: 'Disk High Watermark Reached - disk saturation is {{ $value }}%',
-              description: 'Disk High Watermark Reached at {{ $labels.node }} node in {{ $labels.cluster }} cluster. Some shards will be re-allocated to different nodes if possible. Make sure more disk space is added to the node or drop old indices allocated to this node.',
+              message: 'Disk High Watermark Reached at {{ $labels.node }} node in {{ $labels.cluster }} cluster. Some shards will be re-allocated to different nodes if possible. Make sure more disk space is added to the node or drop old indices allocated to this node.',
             },
           },
 
@@ -124,7 +124,7 @@
             },
             annotations: {
               summary: 'Free disk may be low for optimal segment merges',
-              description: 'Free disk at {{ $labels.node }} node in {{ $labels.cluster }} cluster may be low for optimal segment merges',
+              message: 'Free disk at {{ $labels.node }} node in {{ $labels.cluster }} cluster may be low for optimal segment merges',
             },
           },
 
@@ -142,7 +142,7 @@
             },
             annotations: {
               summary: 'JVM Heap usage on the node is high',
-              description: 'JVM Heap usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%.',
+              message: 'JVM Heap usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%.',
             },
           },
 
@@ -161,7 +161,7 @@
             },
             annotations: {
               summary: 'System CPU usage is high',
-              description: 'System CPU usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%',
+              message: 'System CPU usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%',
             },
           },
           {
@@ -175,7 +175,7 @@
             },
             annotations: {
               summary: 'ES process CPU usage is high',
-              description: 'ES process CPU usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%',
+              message: 'ES process CPU usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%',
             },
           },
 
