@@ -111,6 +111,8 @@
           // Total index size by node:
           //   sum by (cluster, instance, node) (es_index_store_size_bytes{context="total"}) // <- this does not seem to work correctly!?
           //   sum by (cluster, instance, node) (es_indices_store_size_bytes)
+
+          /* Commenting out, see #3
           {
             alert: 'ElasticsearchNodeDiskLowForSegmentMerges',
             expr: |||
@@ -127,6 +129,7 @@
               message: 'Free disk at {{ $labels.node }} node in {{ $labels.cluster }} cluster may be low for optimal segment merges',
             },
           },
+          */
 
           // ==========================================
           // JVM Heap Usage
