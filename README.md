@@ -9,9 +9,14 @@ A set of Grafana dashboard and Prometheus alerts for Elasticsearch deployed as p
 This repository has been heavily inspired by <https://github.com/kubernetes-monitoring/kubernetes-mixin>.
 Follow that repository for further information about deployment.
 
+### Prerequisites
+
+Make sure you have [jb](https://github.com/jsonnet-bundler/jsonnet-bundler/releases), [promtool](https://github.com/prometheus/prometheus/releases), [jsonnet](https://github.com/google/jsonnet/releases) as well as [jsonnetfmt](https://github.com/google/jsonnet/releases) installed.
+
 ### Quick and dirty hint
 
 ```
+$ jb install
 $ make clean && make
 
 # Prometheus rules and alerts are generated here:
