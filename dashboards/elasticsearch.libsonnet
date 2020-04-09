@@ -170,6 +170,29 @@ local gauge = promgrafonnet.gauge;
                          .addPanel(clusterDataNodesGraph)
                          .addPanel(clusterPendingTasksGraph);
 
+      
+      // ==========================================
+      // Threadpools row
+      // Cumulative number of processed requests per threadpool name/type
+      // ==========================================
+      local threadloopTypeGraph =
+        graphPanel.new(
+          '_OVERRIDE_ completed',
+          span=2.4,
+          datasource='$datasource',
+        ).addTarget(
+          prometheus.target(
+            'max(es_cluster_shards_number{cluster="$cluster",type="$shard_type"})'
+          )
+        ) + {
+          title: '$shard_type shards',
+          repeat: 'shard_type',
+        };
+      local threadpools = row.new (
+        height='200',
+        title='Threadpools',
+      ).addPanel(threadloopTypeGraph);
+      
       // ==========================================
       // Shards row
       // ==========================================
@@ -188,7 +211,7 @@ local gauge = promgrafonnet.gauge;
         };
 
       local shardsRow = row.new(
-        height='100',
+        height='200',
         title='Shards',
       ).addPanel(shardsTypeGraph);
 
