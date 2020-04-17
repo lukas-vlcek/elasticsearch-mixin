@@ -15,7 +15,7 @@ Make sure you have [jb](https://github.com/jsonnet-bundler/jsonnet-bundler/relea
 
 ### Quick and dirty hint
 
-```
+```shell script
 $ jb install
 $ make clean && make
 
