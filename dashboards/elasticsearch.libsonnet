@@ -185,10 +185,11 @@ local gauge = promgrafonnet.gauge;
         ) + {
           title: '$shard_type shards',
           repeat: 'shard_type',
+          repeatDirection: 'h',
         };
 
       local shardsRow = row.new(
-        height='100',
+        height='200',
         title='Shards',
       ).addPanel(shardsTypeGraph);
 
