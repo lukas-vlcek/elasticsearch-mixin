@@ -208,6 +208,7 @@ local gauge = promgrafonnet.gauge;
         ) + {
           title: '$shard_type shards',
           repeat: 'shard_type',
+          repeatDirection: 'h',
         };
 
       local shardsRow = row.new(
