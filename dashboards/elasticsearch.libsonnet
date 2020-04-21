@@ -170,29 +170,7 @@ local gauge = promgrafonnet.gauge;
                          .addPanel(clusterDataNodesGraph)
                          .addPanel(clusterPendingTasksGraph);
 
-      
-      // ==========================================
-      // Threadpools row
-      // Cumulative number of processed requests per threadpool name/type
-      // ==========================================
-      local threadloopTypeGraph =
-        graphPanel.new(
-          '_OVERRIDE_ completed',
-          span=2.4,
-          datasource='$datasource',
-        ).addTarget(
-          prometheus.target(
-            'max(es_cluster_shards_number{cluster="$cluster",type="$shard_type"})'
-          )
-        ) + {
-          title: '$shard_type shards',
-          repeat: 'shard_type',
-        };
-      local threadpools = row.new (
-        height='200',
-        title='Threadpools',
-      ).addPanel(threadloopTypeGraph);
-      
+
       // ==========================================
       // Shards row
       // ==========================================
@@ -215,6 +193,32 @@ local gauge = promgrafonnet.gauge;
         height='200',
         title='Shards',
       ).addPanel(shardsTypeGraph);
+
+
+      // ==========================================
+      // Threadpools row
+      // Cumulative number of processed requests per threadpool name/type
+      // ==========================================
+      local threadloopTypeGraph =
+        graphPanel.new(
+          '_OVERRIDE_ completed',
+          span=2.4,
+          datasource='$datasource',
+        ).addTarget(
+          prometheus.target(
+            'max(es_threadpool_tasks_number{cluster="$cluster",name="$pool_name"})'
+          )
+        ) + {
+          title: '$pool_name tasks',
+          repeat: 'pool_name',
+          repeatDirection: 'h',
+        };
+
+      local threadpools = row.new(
+        height='200',
+        title='Threadpools',
+      ).addPanel(threadloopTypeGraph);
+
 
       // ==========================================
       // System row
@@ -774,9 +778,23 @@ local gauge = promgrafonnet.gauge;
           sort: 1,
           includeAll: true,
         }
+      ).addTemplate(
+        {
+          hide: 2,
+          datasource: '$datasource',
+          label: 'Threadpool Type name',
+          name: 'pool_name',
+          query: 'label_values(es_threadpool_tasks_number, name)',
+          refresh: 1,
+          regex: '',
+          type: 'query',
+          sort: 1,
+          includeAll: true,
+        }
       )
       .addRow(clusterRow)
       .addRow(shardsRow)
+      .addRow(threadpools)
       .addRow(systemRow)
       .addRow(docsAndLatenciesRow)
       .addRow(cachesRow)
