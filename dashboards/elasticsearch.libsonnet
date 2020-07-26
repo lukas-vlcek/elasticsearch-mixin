@@ -20,37 +20,24 @@ local gauge = promgrafonnet.gauge;
         graphPanel.new(
           title='Cluster status',
           datasource='$datasource',
+          fill=1,
           span=3
         ).addTarget(
           prometheus.target(
-            'max(es_cluster_status{cluster="$cluster"})'
+            'max(es_cluster_status{cluster="elasticsearch"}) == bool 0',
+            legendFormat='Green'
           )
-        ) + {
-          colorBackground: true,
-          colors: [
-            'rgba(50, 172, 45, 0.97)',
-            'rgba(255, 166, 0, 0.89)',
-            'rgba(245, 54, 54, 0.9)',
-          ],
-          thresholds: '1,2',
-          valueMaps: [
-            {
-              op: '=',
-              text: 'GREEN',
-              value: '0',
-            },
-            {
-              op: '=',
-              text: 'YELLOW',
-              value: '1',
-            },
-            {
-              op: '=',
-              text: 'RED',
-              value: '2',
-            },
-          ],
-        };
+        ).addTarget(
+          prometheus.target(
+            'max(es_cluster_status{cluster="elasticsearch"}) == bool 1',
+            legendFormat='Yellow'
+          )
+        ).addTarget(
+          prometheus.target(
+            'max(es_cluster_status{cluster="elasticsearch"}) == bool 2',
+            legendFormat='Red'
+          )
+        );
 
       local clusterNodesGraph =
         graphPanel.new(
@@ -744,7 +731,7 @@ local gauge = promgrafonnet.gauge;
                      .addPanel(jvmGCTimeGraph);
 
       // ==========================================
-      dashboard.new('Logging / Elasticsearch Nodes', time_from='now-3h')
+      dashboard.new('OpenShift Logging / Elasticsearch Nodes', time_from='now-3h')
       .addTemplate(
         {
           current: {
