@@ -84,26 +84,10 @@ local gauge = promgrafonnet.gauge;
       // ==========================================
       // Shards row
       // ==========================================
-      /*
-      local shardsTypeGraph =
-        graphPanel.new(
-          '_OVERRIDE_ shards',
-          span=2.4,
-          datasource='$datasource',
-        ).addTarget(
-          prometheus.target(
-            'max(es_cluster_shards_number{cluster="$cluster",type="$shard_type"})'
-          )
-        ) + {
-          title: '$shard_type shards',
-          repeat: 'shard_type',
-          repeatDirection: 'h',
-        };
-      */
       local activeShards =
         graphPanel.new(
           'Cluster active shards',
-          span=3,
+          span=6,
           datasource='$datasource',
         ).addTarget(
           prometheus.target(
@@ -116,46 +100,26 @@ local gauge = promgrafonnet.gauge;
             legendFormat='Primary shards'
           )
         );
-      /*
-      local activePrimaryShards =
-      graphPanel.new(
-        'Active primary shards',
-        span=3,
-        datasource='$datasource',
-      ).addTarget(
-        prometheus.target(
-          'max(es_cluster_shards_number{cluster="$cluster",type="active_primary"})'
-        )
-      );
-      */
-      local initializingShards =
+
+      local nonActiveShards =
         graphPanel.new(
-          'Cluster initializing shards',
-          span=3,
+          'Cluster non-active shards',
+          span=6,
           datasource='$datasource',
         ).addTarget(
           prometheus.target(
-            'max(es_cluster_shards_number{cluster="$cluster",type="initializing"})'
+            'max(es_cluster_shards_number{cluster="$cluster",type="initializing"})',
+            legendFormat='Initializing'
           )
-        );
-      local relocatingShards =
-        graphPanel.new(
-          'Cluster relocating shards',
-          span=3,
-          datasource='$datasource',
         ).addTarget(
           prometheus.target(
-            'max(es_cluster_shards_number{cluster="$cluster",type="relocating"})'
+            'max(es_cluster_shards_number{cluster="$cluster",type="relocating"})',
+            legendFormat='Relocating'
           )
-        );
-      local unassignedShards =
-        graphPanel.new(
-          'Cluster unassigned shards',
-          span=3,
-          datasource='$datasource',
         ).addTarget(
           prometheus.target(
-            'max(es_cluster_shards_number{cluster="$cluster",type="unassigned"})'
+            'max(es_cluster_shards_number{cluster="$cluster",type="unassigned"})',
+            legendFormat='Unassigned'
           )
         );
 
@@ -163,10 +127,7 @@ local gauge = promgrafonnet.gauge;
         // height='200',
         title='Shards',
       ).addPanel(activeShards)
-                        // .addPanel(activePrimaryShards)
-                        .addPanel(initializingShards)
-                        .addPanel(relocatingShards)
-                        .addPanel(unassignedShards);
+                        .addPanel(nonActiveShards);
 
 
       // ==========================================
