@@ -46,7 +46,7 @@ local gauge = promgrafonnet.gauge;
           span=3
         ).addTarget(
           prometheus.target(
-            'max(es_cluster_nodes_number{cluster="$cluster"})'
+            'min(es_cluster_nodes_number{cluster="$cluster"})'
           )
         );
 
@@ -57,7 +57,7 @@ local gauge = promgrafonnet.gauge;
           span=3
         ).addTarget(
           prometheus.target(
-            'max(es_cluster_datanodes_number{cluster="$cluster"})'
+            'min(es_cluster_datanodes_number{cluster="$cluster"})'
           )
         );
 
