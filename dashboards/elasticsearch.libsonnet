@@ -463,7 +463,10 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('es_indices_doc_number{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
+          prometheus.target(
+            'es_indices_doc_number{cluster="$cluster", node=~"$node"}',
+            legendFormat='Pod: {{pod}}'
+          )
         ) + {
           fill: 3,
           tooltip: {
@@ -487,7 +490,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_doc_deleted_number{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_doc_deleted_number{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_doc_deleted_number{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local documentsMergingRateGraph =
@@ -504,7 +511,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_merges_total_docs_count{cluster="$cluster",node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_merges_total_docs_count{cluster="$cluster",node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_merges_total_docs_count{cluster="$cluster",node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local docsAndLatenciesRow = row.new(
@@ -535,7 +546,10 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('es_indices_fielddata_memory_size_bytes{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
+          prometheus.target(
+            'es_indices_fielddata_memory_size_bytes{cluster="$cluster", node=~"$node"}',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local cacheFieldDataEvictionsGraph =
@@ -552,7 +566,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_fielddata_evictions_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_fielddata_evictions_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_fielddata_evictions_count{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local cacheQuerySizeGraph =
@@ -569,7 +587,10 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('es_indices_querycache_cache_size_bytes{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
+          prometheus.target(
+            'es_indices_querycache_cache_size_bytes{cluster="$cluster", node=~"$node"}',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local cacheQueryEvictionsGraph =
@@ -586,7 +607,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_querycache_evictions_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_querycache_evictions_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_querycache_evictions_count{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local cacheQueryHitsGraph =
@@ -603,7 +628,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_querycache_hit_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_querycache_hit_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_querycache_hit_count{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local cacheQueryMissesGraph =
@@ -620,7 +649,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_querycache_miss_number{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_querycache_miss_number{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_querycache_miss_number{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local cachesRow = row.new(
@@ -650,7 +683,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_indexing_throttle_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_indexing_throttle_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_indexing_throttle_time_seconds{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local throttlingMergingGraph =
@@ -667,7 +704,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_merges_total_throttled_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_merges_total_throttled_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_merges_total_throttled_time_seconds{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local throttlingRow = row.new(
@@ -694,7 +735,10 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('es_jvm_mem_heap_used_bytes{cluster="$cluster", node=~"$node"}', legendFormat='{{node}} - heap used')
+          prometheus.target(
+            'es_jvm_mem_heap_used_bytes{cluster="$cluster", node=~"$node"}',
+            legendFormat='Pod: {{pod}} - heap used'
+          )
         );
 
       local jvmGCcountGraph =
@@ -711,7 +755,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_jvm_gc_collection_count{cluster="$cluster",node=~"$node"}[$interval:$resolution])', legendFormat='{{node}} - {{gc}}')
+          prometheus.target(
+            //'rate(es_jvm_gc_collection_count{cluster="$cluster",node=~"$node"}[$interval:$resolution])',
+            'rate(es_jvm_gc_collection_count{cluster="$cluster",node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}} - {{gc}}'
+          )
         );
 
       local jvmGCTimeGraph =
@@ -728,7 +776,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_jvm_gc_collection_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}} - {{gc}}')
+          prometheus.target(
+            //'rate(es_jvm_gc_collection_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_jvm_gc_collection_time_seconds{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}} - {{gc}}'
+          )
         );
 
       local jvmRow = row.new(
