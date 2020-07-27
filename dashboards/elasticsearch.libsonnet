@@ -21,8 +21,7 @@ local gauge = promgrafonnet.gauge;
           title='Cluster status',
           datasource='$datasource',
           fill=1,
-          span=3,
-          stack=true
+          span=3
         ).addTarget(
           prometheus.target(
             'max(es_cluster_status{cluster="elasticsearch"}) == bool 0',
@@ -254,7 +253,7 @@ local gauge = promgrafonnet.gauge;
       // ==========================================
       local systemCpuUsageGraph =
         graphPanel.new(
-          'CPU usage',
+          'CPU % usage',
           span=4,
           datasource='$datasource',
           format='percent',
@@ -269,7 +268,7 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('es_os_cpu_percent{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
+          prometheus.target('es_os_cpu_percent{cluster="$cluster", node=~"$node"}', legendFormat='Pod: {{pod}}')
         );
 
       local systemMemoryUsageGraph =
@@ -278,7 +277,7 @@ local gauge = promgrafonnet.gauge;
           span=4,
           datasource='$datasource',
           format='bytes',
-          min=0,
+          // min=0,
           legend_alignAsTable=true,
           legend_avg=true,
           legend_current=true,
@@ -288,15 +287,16 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('es_os_mem_used_bytes{cluster="$cluster", node=~"$node"}', legendFormat='{{node}}')
+          prometheus.target('es_os_mem_used_bytes{cluster="$cluster", node=~"$node"}', legendFormat='Pod: {{pod}}')
         );
 
       local systemDiskUsageGraph =
         graphPanel.new(
-          'Disk usage',
+          'Disk space % used',
           span=4,
           datasource='$datasource',
-          format='percentunit',
+          // format='percentunit',
+          format='percent',
           min=0,
           max=1,
           legend_alignAsTable=true,
@@ -308,25 +308,18 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('1 - es_fs_path_available_bytes{cluster="$cluster",node=~"$node"} / es_fs_path_total_bytes{cluster="$cluster",node=~"$node"}', legendFormat='{{node}} - {{path}}')
-        ) + {
-          thresholds: [
-            {
-              colorMode: 'custom',
-              fill: true,
-              fillColor: 'rgba(216, 200, 27, 0.27)',
-              op: 'gt',
-              value: 0.8,
-            },
-            {
-              colorMode: 'custom',
-              fill: true,
-              fillColor: 'rgba(234, 112, 112, 0.22)',
-              op: 'gt',
-              value: 0.9,
-            },
-          ],
-        };
+          prometheus.target('100 * (1 - es_fs_path_available_bytes{cluster="$cluster",node=~"$node"} / es_fs_path_total_bytes{cluster="$cluster",node=~"$node"})',
+                            legendFormat='Pod: {{pod}} - {{path}}')
+        ).addTarget(
+          prometheus.target('es_cluster_routing_allocation_disk_watermark_low_pct{cluster="$cluster", pod=~"$node.*"}',
+                            legendFormat='Pod: {{pod}} - low watermark')
+        ).addTarget(
+          prometheus.target('es_cluster_routing_allocation_disk_watermark_high_pct{cluster="$cluster", pod=~"$node.*"}',
+                            legendFormat='Pod: {{pod}} - high watermark')
+        ).addTarget(
+          prometheus.target('es_cluster_routing_allocation_disk_watermark_flood_stage_pct{cluster="$cluster", pod=~"$node.*"}',
+                            legendFormat='Pod: {{pod}} - flood stage watermark')
+        );
 
       local systemRow = row.new(
         height='400',
