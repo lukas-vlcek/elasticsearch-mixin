@@ -21,7 +21,8 @@ local gauge = promgrafonnet.gauge;
           title='Cluster status',
           datasource='$datasource',
           fill=1,
-          span=3
+          span=3,
+          stack=true
         ).addTarget(
           prometheus.target(
             'max(es_cluster_status{cluster="elasticsearch"}) == bool 0',
@@ -46,7 +47,8 @@ local gauge = promgrafonnet.gauge;
           span=3
         ).addTarget(
           prometheus.target(
-            'min(es_cluster_nodes_number{cluster="$cluster"})'
+            'min(es_cluster_nodes_number{cluster="$cluster"})',
+            legendFormat='# of all nodes'
           )
         );
 
@@ -57,7 +59,8 @@ local gauge = promgrafonnet.gauge;
           span=3
         ).addTarget(
           prometheus.target(
-            'min(es_cluster_datanodes_number{cluster="$cluster"})'
+            'min(es_cluster_datanodes_number{cluster="$cluster"})',
+            legendFormat='# of data nodes'
           )
         );
 
@@ -68,7 +71,8 @@ local gauge = promgrafonnet.gauge;
           span=3
         ).addTarget(
           prometheus.target(
-            'max(es_cluster_pending_tasks_number{cluster="$cluster"})'
+            'max(es_cluster_pending_tasks_number{cluster="$cluster"})',
+            legendFormat='# of tasks'
           )
         );
 
@@ -105,6 +109,7 @@ local gauge = promgrafonnet.gauge;
         graphPanel.new(
           'Cluster non-active shards',
           span=6,
+          stack=true,
           datasource='$datasource',
         ).addTarget(
           prometheus.target(
