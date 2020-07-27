@@ -247,6 +247,39 @@ local gauge = promgrafonnet.gauge;
         title='Threadpools',
       ).addPanel(threadpoolTypeGraph);
 
+      // ==========================================
+      // Node segments row
+      // ==========================================
+      local nodeSegmentsCount =
+        graphPanel.new(
+          'Number of segments',
+          span=6,
+          datasource='$datasource',
+        ).addTarget(
+          prometheus.target(
+            'avg by (node) (es_indices_segments_number{cluster="$cluster", node=~"$node"})',
+            legendFormat='Node: {{node}}'
+          )
+        );
+
+      local nodeSegmentsMemory =
+        graphPanel.new(
+          'Memory used by segments',
+          span=6,
+          stack=true,
+          datasource='$datasource',
+        ).addTarget(
+          prometheus.target(
+            'sum by (type) (es_indices_segments_memory_bytes{cluster="$cluster", node=~"$node", type!="all"})',
+            legendFormat='{{type}}'
+          )
+        );
+
+      local segments = row.new(
+        height='200',
+        title='Segments',
+      ).addPanel(nodeSegmentsCount)
+                       .addPanel(nodeSegmentsMemory);
 
       // ==========================================
       // System row
@@ -889,6 +922,7 @@ local gauge = promgrafonnet.gauge;
       )
       .addRow(clusterRow)
       .addRow(shardsRow)
+      .addRow(segments)
       .addRow(threadpools)
       .addRow(systemRow)
       .addRow(docsAndLatenciesRow)
