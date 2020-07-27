@@ -378,7 +378,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_indexing_index_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_indexing_index_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_indexing_index_count{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local indexingLatencyGraph =
@@ -395,7 +399,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_indexing_index_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution]) / rate(es_indices_indexing_index_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_indexing_index_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution]) / rate(es_indices_indexing_index_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_indexing_index_time_seconds{cluster="$cluster", node=~"$node"}[$resolution]) / rate(es_indices_indexing_index_count{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local searchRateGraph =
@@ -412,7 +420,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_search_query_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_search_query_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_search_query_count{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local searchLatencyGraph =
@@ -429,7 +441,11 @@ local gauge = promgrafonnet.gauge;
           legend_hideZero=false,
           legend_values=true,
         ).addTarget(
-          prometheus.target('rate(es_indices_search_query_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution]) / rate(es_indices_search_query_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])', legendFormat='{{node}}')
+          prometheus.target(
+            //'rate(es_indices_search_query_time_seconds{cluster="$cluster", node=~"$node"}[$interval:$resolution]) / rate(es_indices_search_query_count{cluster="$cluster", node=~"$node"}[$interval:$resolution])',
+            'rate(es_indices_search_query_time_seconds{cluster="$cluster", node=~"$node"}[$resolution]) / rate(es_indices_search_query_count{cluster="$cluster", node=~"$node"}[$resolution])',
+            legendFormat='Pod: {{pod}}'
+          )
         );
 
       local documentsCountIncReplicasGraph =
