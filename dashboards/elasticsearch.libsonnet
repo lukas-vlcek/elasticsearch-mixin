@@ -311,14 +311,14 @@ local gauge = promgrafonnet.gauge;
           prometheus.target('100 * (1 - es_fs_path_available_bytes{cluster="$cluster",node=~"$node"} / es_fs_path_total_bytes{cluster="$cluster",node=~"$node"})',
                             legendFormat='Pod: {{pod}} - {{path}}')
         ).addTarget(
-          prometheus.target('es_cluster_routing_allocation_disk_watermark_low_pct{cluster="$cluster", pod=~"$node.*"}',
-                            legendFormat='Pod: {{pod}} - low watermark')
+          prometheus.target('avg by (cluster) (es_cluster_routing_allocation_disk_watermark_low_pct{cluster="$cluster", pod=~"$node.*"})',
+                            legendFormat='Cluster low watermark')
         ).addTarget(
-          prometheus.target('es_cluster_routing_allocation_disk_watermark_high_pct{cluster="$cluster", pod=~"$node.*"}',
-                            legendFormat='Pod: {{pod}} - high watermark')
+          prometheus.target('avg by (cluster) (es_cluster_routing_allocation_disk_watermark_high_pct{cluster="$cluster", pod=~"$node.*"})',
+                            legendFormat='Cluster high watermark')
         ).addTarget(
-          prometheus.target('es_cluster_routing_allocation_disk_watermark_flood_stage_pct{cluster="$cluster", pod=~"$node.*"}',
-                            legendFormat='Pod: {{pod}} - flood stage watermark')
+          prometheus.target('avg by (cluster) (es_cluster_routing_allocation_disk_watermark_flood_stage_pct{cluster="$cluster", pod=~"$node.*"})',
+                            legendFormat='Cluster flood stage watermark')
         );
 
       local systemRow = row.new(
